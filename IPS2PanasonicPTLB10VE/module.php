@@ -138,7 +138,7 @@
 	{
 		$Result = -999;
 		$Message = chr(2).$Message.chr(3);
-		$Port = $this->ReadPropertyInteger("Port")
+		$Port = $this->ReadPropertyInteger("Port");
 		If ($this->ReadPropertyBoolean("Open") == true) {
 			if (!$this->Socket)
 			{
