@@ -27,8 +27,7 @@
 		$this->RegisterPropertyInteger("Port", 0);
 		
             	$this->RegisterTimer("Messzyklus", 0, 'IPS2PanasonicPTLB10VE_GetStatus($_IPS["TARGET"]);');
-            	//$this->ConnectParent("{ED89906D-5B78-4D47-AB62-0BDCEB9AD330}");
-		
+  		
 		// Profil anlegen
 		$this->RegisterProfileInteger("IPS2Panasonic.PTLB10VEStatus", "Information", "", "", 0, 2, 1);
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 0, "Bereitschaft", "Information", -1);
