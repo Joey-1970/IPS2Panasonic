@@ -180,7 +180,32 @@
 			$this->SendDebug("GetStatus", "Ausfuehrung", 0);
 			$this->Send('Q$S');
 		}
-	}				
+	}
+	    
+	private function ConnectionTest()
+	{
+	      	$result = false;
+		$Port = $this->ReadPropertyString("Port");
+	      	If (Sys_Ping($this->ReadPropertyString("IPAddress"), 2000)) {
+			$status = @fsockopen($this->ReadPropertyString("IPAddress"), $Port, $errno, $errstr, 10);
+				if (!$status) {
+					IPS_LogMessage("IPS2PanasonicPTLB10VE","Port ist geschlossen!");
+					$this->SendDebug("ConnectionTest", "Port ist geschlossen!", 0);
+	   			}
+	   			else {
+	   				fclose($status);
+					$result = true;
+					$this->SetStatus(102);
+					$this->SendDebug("ConnectionTest", "Verbindung erfolgreich", 0);
+	   			}
+		}
+		else {
+			IPS_LogMessage("IPS2PanasonicPTLB10VE","IP ".$this->ReadPropertyString("IPAddress")." reagiert nicht!");
+			$this->SendDebug("ConnectionTest", "IP ".$this->ReadPropertyString("IPAddress")." reagiert nicht!", 0);
+			$this->SetStatus(104);
+		}
+	return $result;
+	}
 	    
 	private function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize)
 	{
