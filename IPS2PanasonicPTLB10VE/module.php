@@ -204,12 +204,12 @@
 				}
 				break;
 			case "PON":
-				If (GetValueBoolean($this->GetIDForIdent("Power")) = false) {
+				If (GetValueBoolean($this->GetIDForIdent("Power")) == false) {
 					SetValueBoolean($this->GetIDForIdent("Power"), true);
 				}
 				break;
 			case "POF":
-				If (GetValueBoolean($this->GetIDForIdent("Power")) = true) {
+				If (GetValueBoolean($this->GetIDForIdent("Power")) == true) {
 					SetValueBoolean($this->GetIDForIdent("Power"), false);
 				}
 				break;
