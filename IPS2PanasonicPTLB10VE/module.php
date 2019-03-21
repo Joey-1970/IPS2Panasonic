@@ -96,6 +96,7 @@
         	If (($this->ReadPropertyBoolean("Open") == true) AND ($this->ConnectionTest() == true)) {
 			$this->SetTimerInterval("Messzyklus", 5 * 1000);
 			$this->SetStatus(102);
+			$this->GetStatus();
 		}
 		else {
 			$this->SetTimerInterval("Messzyklus", 0);
@@ -109,22 +110,22 @@
 	        case "Power":
 	            	$this->SendDebug("RequestAction", "Power: Ausfuehrung", 0);
 			If (GetValueInteger($this->GetIDForIdent("Status")) == 0) {
-				$this->Send("PON");
+				$this->CommandClientSocket("PON", 5);
 			}
 			elseif (GetValueInteger($this->GetIDForIdent("Status")) == 2) {
-				$this->Send("POF");
+				$this->CommandClientSocket("POF", 5);
 			}
 	            	break;
 	        case "Input":
 			$this->SendDebug("RequestAction", "Input: Ausfuehrung", 0);
 	            	$Input = array("VID", "SVD", "RG1");
-			$this->Send("IIS:".$Input[$Value]);
+			$this->CommandClientSocket("IIS:".$Input[$Value], 5);
 			SetValueInteger($this->GetIDForIdent("Input"), $Value);
 	           	break;
 		case "Volume":
 			$this->SendDebug("RequestAction", "Volume: Ausfuehrung", 0);
 	            	$Volume = sprintf('%03s',intval($Value / 4));
-			$this->Send("AVL:".$Volume);
+			$this->CommandClientSocket("AVL:".$Volume, 5);
 			SetValueInteger($this->GetIDForIdent("Volume"), $Value);
 	            	break;	
 	        default:
@@ -136,6 +137,8 @@
 	private function CommandClientSocket(String $Message, $ResponseLen = 3)
 	{
 		$Result = -999;
+		$Message = chr(2).$Message.chr(3);
+		$Port = $this->ReadPropertyInteger("Port")
 		If ($this->ReadPropertyBoolean("Open") == true) {
 			if (!$this->Socket)
 			{
@@ -150,7 +153,7 @@
 				// Timeout setzen
 				socket_set_option($this->Socket, SOL_SOCKET, SO_RCVTIMEO, array("sec"=>2, "usec"=>0));
 				// Verbindung aufbauen
-				if(!(socket_connect($this->Socket, $this->ReadPropertyString("IPAddress"), 8102))) {
+				if(!(socket_connect($this->Socket, $this->ReadPropertyString("IPAddress"), $Port))) {
 					$errorcode = socket_last_error();
 					$errormsg = socket_strerror($errorcode);
 					$this->SendDebug("CommandClientSocket", "Fehler beim Verbindungsaufbaus ".$errorcode." ".$errormsg, 0);
@@ -158,7 +161,7 @@
 					return;
 				}
 				if (!$this->Socket) {
-					IPS_LogMessage("PioneerBDP450 Socket", "Fehler beim Verbindungsaufbau ".$errno." ".$errstr);
+					IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Verbindungsaufbau ".$errno." ".$errstr);
 					$this->SendDebug("CommandClientSocket", "Fehler beim Verbindungsaufbau ".$errno." ".$errstr, 0);
 					IPS_SemaphoreLeave("ClientSocket");
 					return $Result;
@@ -169,7 +172,7 @@
 			{
 				$errorcode = socket_last_error();
 				$errormsg = socket_strerror($errorcode);
-				IPS_LogMessage("PioneerBDP450 Socket", "Fehler beim Senden ".$errorcode." ".$errormsg);
+				IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Senden ".$errorcode." ".$errormsg);
 				$this->SendDebug("CommandClientSocket", "Fehler beim Senden ".$errorcode." ".$errormsg, 0);
 				IPS_SemaphoreLeave("ClientSocket");
 				return;
@@ -190,53 +193,39 @@
 	return $Result;
 	}
 	    
-	public function GetData()
+	private function ClientResponse($Message, $Response) 
 	{
-		If ($this->ReadPropertyBoolean("Open") == true) {
-			$this->SendDebug("GetData", "Ausfuehrung", 0);
-			IPS_Sleep(50); // Damit alle Daten auch da sind
-			/*
-			$Result = $this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "read_bb_serial", "Pin_RxD" => $this->ReadPropertyInteger("Pin_RxD") )));
-			If (!$Result) {
-				$this->SendDebug("GetData", "Lesen des Dateneingangs nicht erfolgreich!", 0);
-				$this->SetStatus(202);
-			}
-			else {
-				$this->SetStatus(102);
-				$ByteMessage = array();
-				$ByteMessage = unpack("C*", $Result);
-				$this->SendDebug("GetData", $Result, 0);
-				//$this->SendDebug("GetData", count($ByteMessage), 0);
-				$this->SendDebug("GetData", serialize($ByteMessage), 0);
+		// Entfernen der Steuerzeichen
+		$Response = trim($Response, "\x00..\x1F");
+		
+		switch($Message) {
+			case "Q$S":
+				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
 				
-			}
-			*/
-		}
-	}	
-	    
-	    
-	public function Send(String $Message)
-	{
-		If ($this->ReadPropertyBoolean("Open") == true) {
-			$this->SendDebug("Send", "Ausfuehrung", 0);
-			$Message = chr(2).$Message.chr(3);
+				break;
+			case "PON":
+				
+				break;
+			case "POF":
+				
+				break;
 			
-			/*
-			$MessageArray = array();
-			$MessageArray = unpack("C*", $Message);
-			//$Message = utf8_encode($Message);
-			//$this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "write_bb_bytes_serial", "Baud" => 9600, "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "Command" => $Message)));
-			//$this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "write_bb_bytesarray_serial", "Baud" => 9600, "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "Command" => serialize($MessageArray) )));
-			*/
-			$this->GetData();
+			case "?R":
+				
+				break;
+			case "?T":
+				
+				break;
+			
 		}
 	}
-	
+	    
+
 	public function GetStatus()
 	{
 		If ($this->ReadPropertyBoolean("Open") == true) {
 			$this->SendDebug("GetStatus", "Ausfuehrung", 0);
-			$this->Send('Q$S');
+			$this->CommandClientSocket('Q$S', 3);
 		}
 	}
 	    
