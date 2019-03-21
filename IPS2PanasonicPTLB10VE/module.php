@@ -43,20 +43,15 @@
 	
 		// Status-Variablen anlegen
 		$this->RegisterVariableInteger("Status", "Status", "IPS2Panasonic.PTLB10VEStatus", 10);
-		$this->DisableAction("Status");
-		IPS_SetHidden($this->GetIDForIdent("Status"), false);
 		
 		$this->RegisterVariableBoolean("Power", "Power", "~Switch", 20);
 		$this->EnableAction("Power");
-		IPS_SetHidden($this->GetIDForIdent("Power"), false);
 		
 		$this->RegisterVariableInteger("Input", "Input", "IPS2Panasonic.PTLB10VEInput", 30);
 		$this->EnableAction("Input");
-		IPS_SetHidden($this->GetIDForIdent("Input"), false);
 		
 		$this->RegisterVariableInteger("Volume", "Volume", "~Intensity.255", 40);
 	        $this->EnableAction("Volume");
-		IPS_SetHidden($this->GetIDForIdent("Volume"), false);
         }
 	
 	public function GetConfigurationForm() 
@@ -197,11 +192,12 @@
 	{
 		// Entfernen der Steuerzeichen
 		$Response = trim($Response, "\x00..\x1F");
+		$Message = trim($Message, "\x00..\x1F");
 		
 		switch($Message) {
 			case 'Q$S':
 				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
-				
+				SetValueBoolean($this->GetIDForIdent("Power"), $Response);
 				break;
 			case "PON":
 				
