@@ -232,7 +232,7 @@
 	private function ConnectionTest()
 	{
 	      	$result = false;
-		$Port = $this->ReadPropertyString("Port");
+		$Port = $this->ReadPropertyInteger("Port");
 	      	If (Sys_Ping($this->ReadPropertyString("IPAddress"), 2000)) {
 			$status = @fsockopen($this->ReadPropertyString("IPAddress"), $Port, $errno, $errstr, 10);
 				if (!$status) {
