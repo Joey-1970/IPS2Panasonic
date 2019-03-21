@@ -196,15 +196,22 @@
 		switch($Message) {
 			case 'Q$S':
 				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
+				If (GetValueInteger($this->GetIDForIdent("Status")) <> $Response) {
+					SetValueInteger($this->GetIDForIdent("Status"), $Response);
+				}
 				If (GetValueBoolean($this->GetIDForIdent("Power")) <> $Response) {
 					SetValueBoolean($this->GetIDForIdent("Power"), $Response);
 				}
 				break;
 			case "PON":
-				
+				If (GetValueBoolean($this->GetIDForIdent("Power")) = false) {
+					SetValueBoolean($this->GetIDForIdent("Power"), true);
+				}
 				break;
 			case "POF":
-				
+				If (GetValueBoolean($this->GetIDForIdent("Power")) = true) {
+					SetValueBoolean($this->GetIDForIdent("Power"), false);
+				}
 				break;
 			
 			case "?R":
