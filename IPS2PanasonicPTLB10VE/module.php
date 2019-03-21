@@ -15,6 +15,8 @@
             	// Diese Zeile nicht löschen.
             	parent::Create();
             	$this->RegisterPropertyBoolean("Open", false);
+		$this->RegisterPropertyString("IPAddress", "127.0.0.1");
+		$this->RegisterPropertyInteger("Port", 0);
 		
             	$this->RegisterTimer("Messzyklus", 0, 'IPS2PanasonicPTLB10VE_GetStatus($_IPS["TARGET"]);');
             	//$this->ConnectParent("{ED89906D-5B78-4D47-AB62-0BDCEB9AD330}");
@@ -59,6 +61,8 @@
 		
 		$arrayElements = array(); 
 		$arrayElements[] = array("type" => "CheckBox", "name" => "Open", "caption" => "Aktiv"); 
+		$arrayElements[] = array("type" => "ValidationTextBox", "name" => "IPAddress", "caption" => "IP");
+		$arrayElements[] = array("type" => "ValidationTextBox", "name" => "Port", "caption" => "Port");
 		
   		
 		
