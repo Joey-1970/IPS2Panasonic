@@ -15,27 +15,24 @@
             	// Diese Zeile nicht löschen.
             	parent::Create();
             	$this->RegisterPropertyBoolean("Open", false);
-		$this->RegisterPropertyInteger("Pin_RxD", -1);
-		$this->SetBuffer("PreviousPin_RxD", -1);
-		$this->RegisterPropertyInteger("Pin_TxD", -1);
-		$this->SetBuffer("PreviousPin_TxD", -1);
-            	$this->RegisterTimer("Messzyklus", 0, 'I2GPTLB10VE_GetStatus($_IPS["TARGET"]);');
-            	$this->ConnectParent("{ED89906D-5B78-4D47-AB62-0BDCEB9AD330}");
+		
+            	$this->RegisterTimer("Messzyklus", 0, 'IPS2PanasonicPTLB10VE_GetStatus($_IPS["TARGET"]);');
+            	//$this->ConnectParent("{ED89906D-5B78-4D47-AB62-0BDCEB9AD330}");
 		
 		// Profil anlegen
-		$this->RegisterProfileInteger("IPS2GPIO.PTLB10VEStatus", "Information", "", "", 0, 2, 1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEStatus", 0, "Bereitschaft", "Information", -1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEStatus", 1, "Lampeneinschaltsteuerung", "Information", -1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEStatus", 2, "Lampe eingeschaltet", "Information", -1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEStatus", 3, "Lampenausschaltsteuerung", "Information", -1);
+		$this->RegisterProfileInteger("IPS2Panasonic.PTLB10VEStatus", "Information", "", "", 0, 2, 1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 0, "Bereitschaft", "Information", -1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 1, "Lampeneinschaltsteuerung", "Information", -1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 2, "Lampe eingeschaltet", "Information", -1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 3, "Lampenausschaltsteuerung", "Information", -1);
 		
-		$this->RegisterProfileInteger("IPS2GPIO.PTLB10VEInput", "Information", "", "", 0, 2, 1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEInput", 0, "Video", "Information", -1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEInput", 1, "S-Video", "Information", -1);
-		IPS_SetVariableProfileAssociation("IPS2GPIO.PTLB10VEInput", 2, "RGB", "Information", -1);
+		$this->RegisterProfileInteger("IPS2Panasonic.PTLB10VEInput", "Information", "", "", 0, 2, 1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 0, "Video", "Information", -1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 1, "S-Video", "Information", -1);
+		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 2, "RGB", "Information", -1);
 	
 		// Status-Variablen anlegen
-		$this->RegisterVariableInteger("Status", "Status", "IPS2GPIO.PTLB10VEStatus", 10);
+		$this->RegisterVariableInteger("Status", "Status", "IPS2Panasonic.PTLB10VEStatus", 10);
 		$this->DisableAction("Status");
 		IPS_SetHidden($this->GetIDForIdent("Status"), false);
 		
@@ -43,7 +40,7 @@
 		$this->EnableAction("Power");
 		IPS_SetHidden($this->GetIDForIdent("Power"), false);
 		
-		$this->RegisterVariableInteger("Input", "Input", "IPS2GPIO.PTLB10VEInput", 30);
+		$this->RegisterVariableInteger("Input", "Input", "IPS2Panasonic.PTLB10VEInput", 30);
 		$this->EnableAction("Input");
 		IPS_SetHidden($this->GetIDForIdent("Input"), false);
 		
@@ -58,37 +55,12 @@
 		$arrayStatus[] = array("code" => 101, "icon" => "inactive", "caption" => "Instanz wird erstellt"); 
 		$arrayStatus[] = array("code" => 102, "icon" => "active", "caption" => "Instanz ist aktiv");
 		$arrayStatus[] = array("code" => 104, "icon" => "inactive", "caption" => "Instanz ist inaktiv");
-		$arrayStatus[] = array("code" => 200, "icon" => "error", "caption" => "Pin wird doppelt genutzt!");
-		$arrayStatus[] = array("code" => 201, "icon" => "error", "caption" => "Pin ist an diesem Raspberry Pi Modell nicht vorhanden!"); 
+		$arrayStatus[] = array("code" => 200, "icon" => "error", "caption" => "Kommunikation gestört!");
 		
 		$arrayElements = array(); 
 		$arrayElements[] = array("type" => "CheckBox", "name" => "Open", "caption" => "Aktiv"); 
-		$arrayElements[] = array("type" => "Label", "label" => "Angabe der GPIO-Nummer (Broadcom-Number)"); 
-  		
-		$arrayOptions = array();
-		$GPIO = array();
-		$GPIO = unserialize($this->Get_GPIO());
-		If ($this->ReadPropertyInteger("Pin_RxD") >= 0 ) {
-			$GPIO[$this->ReadPropertyInteger("Pin_RxD")] = "GPIO".(sprintf("%'.02d", $this->ReadPropertyInteger("Pin_RxD")));
-		}
-		ksort($GPIO);
-		foreach($GPIO AS $Value => $Label) {
-			$arrayOptions[] = array("label" => $Label, "value" => $Value);
-		}
-		$arrayElements[] = array("type" => "Select", "name" => "Pin_RxD", "caption" => "GPIO-Nr. RxD", "options" => $arrayOptions );
 		
-		$arrayOptions = array();
-		$GPIO = array();
-		$GPIO = unserialize($this->Get_GPIO());
-		If ($this->ReadPropertyInteger("Pin_TxD") >= 0 ) {
-			$GPIO[$this->ReadPropertyInteger("Pin_TxD")] = "GPIO".(sprintf("%'.02d", $this->ReadPropertyInteger("Pin_TxD")));
-		}
-		ksort($GPIO);
-		foreach($GPIO AS $Value => $Label) {
-			$arrayOptions[] = array("label" => $Label, "value" => $Value);
-		}
-		$arrayElements[] = array("type" => "Select", "name" => "Pin_TxD", "caption" => "GPIO-Nr. TxD", "options" => $arrayOptions );
-				
+  		
 		
 		$arrayActions = array();
 		If ($this->ReadPropertyBoolean("Open") == true) {
@@ -105,20 +77,15 @@
         {
 	        // Diese Zeile nicht löschen
 	      	parent::ApplyChanges();
-		If ( ( intval($this->GetBuffer("PreviousPin_RxD")) <> $this->ReadPropertyInteger("Pin_RxD") ) OR ( intval($this->GetBuffer("PreviousPin_TxD")) <> $this->ReadPropertyInteger("Pin_TxD") ) ) {
-			$this->SendDebug("ApplyChanges", "Pin-Wechsel RxD - Vorheriger Pin: ".$this->GetBuffer("PreviousPin_RxD")." Jetziger Pin: ".$this->ReadPropertyInteger("Pin_RxD"), 0);
-			$this->SendDebug("ApplyChanges", "Pin-Wechsel TxD - Vorheriger Pin: ".$this->GetBuffer("PreviousPin_TxD")." Jetziger Pin: ".$this->ReadPropertyInteger("Pin_TxD"), 0);
-		}
+		
 		
 		// Summary setzen
-		$this->SetSummary("GPIO RxD: ".$this->ReadPropertyInteger("Pin_RxD")." GPIO TxD: ".$this->ReadPropertyInteger("Pin_TxD"));
+		//$this->SetSummary("GPIO RxD: ".$this->ReadPropertyInteger("Pin_RxD")." GPIO TxD: ".$this->ReadPropertyInteger("Pin_TxD"));
 		
         	If ((IPS_GetKernelRunlevel() == 10103) AND ($this->HasActiveParent() == true)) {
 			// den Handle für dieses Gerät ermitteln
 			If (($this->ReadPropertyInteger("Pin_RxD") >= 0) AND ($this->ReadPropertyInteger("Pin_TxD") >= 0) AND ($this->ReadPropertyBoolean("Open") == true) ) {
-				$Result = $this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "open_bb_serial_ptlb10ve", "Baud" => 9600, "Pin_RxD" => $this->ReadPropertyInteger("Pin_RxD"), "PreviousPin_RTxD" => $this->GetBuffer("PreviousPin_RxD"), "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "PreviousPin_TxD" => $this->GetBuffer("PreviousPin_TxD"), "InstanceID" => $this->InstanceID )));
-				$this->SetBuffer("PreviousPin_RxD", $this->ReadPropertyInteger("Pin_RxD"));
-				$this->SetBuffer("PreviousPin_TxD", $this->ReadPropertyInteger("Pin_TxD"));
+				
 				$this->SetTimerInterval("Messzyklus", 5 * 1000);
 				$this->SetStatus(102);
 			}
@@ -161,19 +128,7 @@
 	{
 		$data = json_decode($JSONString);
 	 	switch ($data->Function) {
-			 case "set_serial_PTLB10VE_data":
-				$ByteMessage = $data->Value;
-				$this->SendDebug("ReceiveData", "Ankommende Daten: ".$ByteMessage, 0);
-				
-				break;
-			 case "get_serial":
-			   	$this->ApplyChanges();
-				break;
-			 case "status":
-			   	If (($data->Pin == $this->ReadPropertyInteger("Pin_RxD")) OR ($data->Pin == $this->ReadPropertyInteger("Pin_TxD"))) {
-			   		$this->SetStatus($data->Status);
-			   	}
-			   	break;
+			 
 	 	}
  	}
 	// Beginn der Funktionen
@@ -182,6 +137,7 @@
 		If ($this->ReadPropertyBoolean("Open") == true) {
 			$this->SendDebug("GetData", "Ausfuehrung", 0);
 			IPS_Sleep(50); // Damit alle Daten auch da sind
+			/*
 			$Result = $this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "read_bb_serial", "Pin_RxD" => $this->ReadPropertyInteger("Pin_RxD") )));
 			If (!$Result) {
 				$this->SendDebug("GetData", "Lesen des Dateneingangs nicht erfolgreich!", 0);
@@ -196,6 +152,7 @@
 				$this->SendDebug("GetData", serialize($ByteMessage), 0);
 				
 			}
+			*/
 		}
 	}	
 	    
@@ -205,11 +162,14 @@
 		If ($this->ReadPropertyBoolean("Open") == true) {
 			$this->SendDebug("Send", "Ausfuehrung", 0);
 			$Message = chr(2).$Message.chr(3);
+			
+			/*
 			$MessageArray = array();
 			$MessageArray = unpack("C*", $Message);
 			//$Message = utf8_encode($Message);
 			//$this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "write_bb_bytes_serial", "Baud" => 9600, "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "Command" => $Message)));
-			$this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "write_bb_bytesarray_serial", "Baud" => 9600, "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "Command" => serialize($MessageArray) )));
+			//$this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "write_bb_bytesarray_serial", "Baud" => 9600, "Pin_TxD" => $this->ReadPropertyInteger("Pin_TxD"), "Command" => serialize($MessageArray) )));
+			*/
 			$this->GetData();
 		}
 	}
@@ -238,22 +198,6 @@
 	        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
 	        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);        
 	}    
-	    
-	private function Get_GPIO()
-	{
-		If ($this->HasActiveParent() == true) {
-			$GPIO = $this->SendDataToParent(json_encode(Array("DataID"=> "{A0DAAF26-4A2D-4350-963E-CC02E74BD414}", "Function" => "get_GPIO")));
-		}
-		else {
-			$AllGPIO = array();
-			$AllGPIO[-1] = "undefiniert";
-			for ($i = 2; $i <= 27; $i++) {
-				$AllGPIO[$i] = "GPIO".(sprintf("%'.02d", $i));
-			}
-			$GPIO = serialize($AllGPIO);
-		}
-	return $GPIO;
-	}
 	    
 	private function HasActiveParent()
     	{
