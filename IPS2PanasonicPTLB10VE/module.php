@@ -62,7 +62,7 @@
 		$arrayElements = array(); 
 		$arrayElements[] = array("type" => "CheckBox", "name" => "Open", "caption" => "Aktiv"); 
 		$arrayElements[] = array("type" => "ValidationTextBox", "name" => "IPAddress", "caption" => "IP");
-		$arrayElements[] = array("type" => "ValidationTextBox", "name" => "Port", "caption" => "Port");
+		$arrayElements[] = array("type" => "NumberSpinner", "name" => "Port", "caption" => "Port");
 		
   		
 		
@@ -82,23 +82,19 @@
 	        // Diese Zeile nicht löschen
 	      	parent::ApplyChanges();
 		
-		
 		// Summary setzen
-		//$this->SetSummary("GPIO RxD: ".$this->ReadPropertyInteger("Pin_RxD")." GPIO TxD: ".$this->ReadPropertyInteger("Pin_TxD"));
+		$this->SetSummary($this->ReadPropertyString("IPAddress").":".$this->ReadPropertyInteger("Port"));
 		
-        	If ((IPS_GetKernelRunlevel() == 10103) AND ($this->HasActiveParent() == true)) {
-			// den Handle für dieses Gerät ermitteln
-			If (($this->ReadPropertyInteger("Pin_RxD") >= 0) AND ($this->ReadPropertyInteger("Pin_TxD") >= 0) AND ($this->ReadPropertyBoolean("Open") == true) ) {
-				
-				$this->SetTimerInterval("Messzyklus", 5 * 1000);
-				$this->SetStatus(102);
-			}
-			else {
-				$this->SetTimerInterval("Messzyklus", 0);
-				$this->SetStatus(104);
-			}
+        	If (($this->ReadPropertyBoolean("Open") == true) AND ($this->ConnectionTest() == true)) {
+			$this->SetTimerInterval("Messzyklus", 5 * 1000);
+			$this->SetStatus(102);
+		}
+		else {
+			$this->SetTimerInterval("Messzyklus", 0);
+			$this->SetStatus(104);
 		}
         }
+	    
 	public function RequestAction($Ident, $Value) 
 	{
   		switch($Ident) {
