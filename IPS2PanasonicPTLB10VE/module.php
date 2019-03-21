@@ -220,9 +220,9 @@
 			case preg_match('/IIS.*/', $Message) ? $Message : !$Message:
 					$Input = substr($Message, -3);
 					$InputArray = array("VID", "SVD", "RG1");
-					//SetValueInteger($this->GetIDForIdent("Input"), $Value);
+					$Key = array_search($Input, $InputArray);
+					SetValueInteger($this->GetIDForIdent("Input"), $Key);
 				break;
-			
 		}
 	}
 	    
