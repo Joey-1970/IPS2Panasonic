@@ -199,7 +199,7 @@
 		$Response = trim($Response, "\x00..\x1F");
 		
 		switch($Message) {
-			case "Q$S":
+			case 'Q$S':
 				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
 				
 				break;
