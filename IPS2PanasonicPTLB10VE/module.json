@@ -1,0 +1,14 @@
+{
+  "id": "{4D82CA71-A64F-2C5C-E4A0-F591B27ADB82}",
+  "name": "IPS2PanasonicPTLB10VE",
+  "type": 3,
+  "vendor": "JP-IPS-Modules",
+  "aliases":
+  [
+    "IPS2PanasonicPTLB10VE"
+  ],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "IPS2PanasonicPTLB10VE"
+}
