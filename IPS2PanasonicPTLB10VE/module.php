@@ -176,7 +176,7 @@
 			if(socket_recv ($this->Socket, $Response, $ResponseLen, MSG_WAITALL ) === FALSE) {
 				$errorcode = socket_last_error();
 				$errormsg = socket_strerror($errorcode);
-				IPS_LogMessage("PioneerBDP450 Socket", "Fehler beim Empfangen ".$errorcode." ".$errormsg);
+				IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Empfangen ".$errorcode." ".$errormsg);
 				$this->SendDebug("CommandClientSocket", "Fehler beim Empfangen ".$errorcode." ".$errormsg, 0);
 				$this->SendDebug("CommandClientSocket", "Gesendeter Befehl: ".$Message, 0);
 				IPS_SemaphoreLeave("ClientSocket");
@@ -197,7 +197,9 @@
 		switch($Message) {
 			case 'Q$S':
 				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
-				SetValueBoolean($this->GetIDForIdent("Power"), $Response);
+				If (GetValueBoolean($this->GetIDForIdent("Power")) <> $Response) {
+					SetValueBoolean($this->GetIDForIdent("Power"), $Response);
+				}
 				break;
 			case "PON":
 				
