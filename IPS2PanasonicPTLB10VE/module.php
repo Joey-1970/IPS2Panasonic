@@ -113,14 +113,12 @@
 	        case "Input":
 			$this->SendDebug("RequestAction", "Input: Ausfuehrung", 0);
 	            	$Input = array("VID", "SVD", "RG1");
-			$this->CommandClientSocket("IIS:".$Input[$Value], 5);
-			SetValueInteger($this->GetIDForIdent("Input"), $Value);
+			$this->CommandClientSocket("IIS:".$Input[$Value], 9);
 	           	break;
 		case "Volume":
 			$this->SendDebug("RequestAction", "Volume: Ausfuehrung", 0);
 	            	$Volume = sprintf('%03s',intval($Value / 4));
-			$this->CommandClientSocket("AVL:".$Volume, 5);
-			SetValueInteger($this->GetIDForIdent("Volume"), $Value);
+			$this->CommandClientSocket("AVL:".$Volume, 9);
 	            	break;	
 	        default:
 	            throw new Exception("Invalid Ident");
@@ -213,12 +211,16 @@
 					SetValueBoolean($this->GetIDForIdent("Power"), false);
 				}
 				break;
-			
-			case "?R":
-				
+			case preg_match('/VOL.*/', $Message) ? $Message : !$Message:
+					$Volume = intval(substr($Message, -3));
+				   	If (GetValueInteger($this->GetIDForIdent("Volume")) <> ($Volume * 4)) {
+						SetValueInteger($this->GetIDForIdent("Volume"), ($Volume * 4));
+					}
 				break;
-			case "?T":
-				
+			case preg_match('/IIS.*/', $Message) ? $Message : !$Message:
+					$Input = substr($Message, -3);
+					$InputArray = array("VID", "SVD", "RG1");
+					//SetValueInteger($this->GetIDForIdent("Input"), $Value);
 				break;
 			
 		}
