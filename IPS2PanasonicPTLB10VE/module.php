@@ -109,6 +109,7 @@
 			elseif (GetValueInteger($this->GetIDForIdent("Status")) == 2) {
 				$this->CommandClientSocket("POF", 5);
 			}
+			$this->GetStatus();
 	            	break;
 	        case "Input":
 			$this->SendDebug("RequestAction", "Input: Ausfuehrung", 0);
@@ -160,7 +161,7 @@
 				}
 			}
 			// Message senden
-			if(!socket_send ($this->Socket, $Message.chr(13), strlen($Message.chr(13)), 0))
+			if(!socket_send ($this->Socket, $Message, strlen($Message), 0))
 			{
 				$errorcode = socket_last_error();
 				$errormsg = socket_strerror($errorcode);
@@ -193,7 +194,6 @@
 		
 		switch($Message) {
 			case 'Q$S':
-				$this->SendDebug("ClientResponse", "Message: ".$Message." Rueckgabe: ".$Response, 0);
 				If (GetValueInteger($this->GetIDForIdent("Status")) <> $Response) {
 					SetValueInteger($this->GetIDForIdent("Status"), $Response);
 				}
@@ -288,6 +288,5 @@
 		}
         return false;
     	}  
-    
 }
 ?>
