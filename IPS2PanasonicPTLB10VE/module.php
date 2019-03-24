@@ -35,7 +35,7 @@
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 2, "Lampe eingeschaltet", "Information", -1);
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEStatus", 3, "Lampenausschaltsteuerung", "Information", -1);
 		
-		$this->RegisterProfileInteger("IPS2Panasonic.PTLB10VEInput", "Information", "", "", 0, 2, 1);
+		$this->RegisterProfileInteger("IPS2Panasonic.PTLB10VEInput", "Information", "", "", 0, 2, 0);
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 0, "Video", "Information", -1);
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 1, "S-Video", "Information", -1);
 		IPS_SetVariableProfileAssociation("IPS2Panasonic.PTLB10VEInput", 2, "RGB", "Information", -1);
