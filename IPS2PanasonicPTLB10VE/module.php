@@ -51,6 +51,8 @@
 		
 		$this->RegisterVariableInteger("Volume", "Volume", "~Intensity.255", 40);
 	        $this->EnableAction("Volume");
+		
+		$this->RegisterVariableBoolean("Screen", "Screen", "~Switch", 50);
         }
 	
 	public function GetConfigurationForm() 
@@ -196,6 +198,12 @@
 			case 'Q$S':
 				If (GetValueInteger($this->GetIDForIdent("Status")) <> $Response) {
 					SetValueInteger($this->GetIDForIdent("Status"), $Response);
+					If (($Response == 0) OR ($Response == 3)) {
+						SetValueBoolean($this->GetIDForIdent("Screen"), false);
+					}
+					elseIf (($Response == 1) OR ($Response == 2)) {
+						SetValueBoolean($this->GetIDForIdent("Screen"), true);
+					}
 				}
 				If (GetValueBoolean($this->GetIDForIdent("Power")) <> $Response) {
 					SetValueBoolean($this->GetIDForIdent("Power"), $Response);
