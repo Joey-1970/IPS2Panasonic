@@ -142,7 +142,6 @@
 					$errorcode = socket_last_error();
 					$errormsg = socket_strerror($errorcode);
 					$this->SendDebug("CommandClientSocket", "Fehler beim Erstellen ".$errorcode." ".$errormsg, 0);
-					IPS_SemaphoreLeave("ClientSocket");
 					return;
 				}
 				// Timeout setzen
@@ -152,13 +151,11 @@
 					$errorcode = socket_last_error();
 					$errormsg = socket_strerror($errorcode);
 					$this->SendDebug("CommandClientSocket", "Fehler beim Verbindungsaufbaus ".$errorcode." ".$errormsg, 0);
-					IPS_SemaphoreLeave("ClientSocket");
 					return;
 				}
 				if (!$this->Socket) {
 					IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Verbindungsaufbau ".$errno." ".$errstr);
 					$this->SendDebug("CommandClientSocket", "Fehler beim Verbindungsaufbau ".$errno." ".$errstr, 0);
-					IPS_SemaphoreLeave("ClientSocket");
 					return $Result;
 				}
 			}
@@ -169,7 +166,6 @@
 				$errormsg = socket_strerror($errorcode);
 				IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Senden ".$errorcode." ".$errormsg);
 				$this->SendDebug("CommandClientSocket", "Fehler beim Senden ".$errorcode." ".$errormsg, 0);
-				IPS_SemaphoreLeave("ClientSocket");
 				return;
 			}
 			//Now receive reply from server
@@ -179,7 +175,6 @@
 				IPS_LogMessage("IPS2PanasonicPTLB10VE Socket", "Fehler beim Empfangen ".$errorcode." ".$errormsg);
 				$this->SendDebug("CommandClientSocket", "Fehler beim Empfangen ".$errorcode." ".$errormsg, 0);
 				$this->SendDebug("CommandClientSocket", "Gesendeter Befehl: ".$Message, 0);
-				IPS_SemaphoreLeave("ClientSocket");
 				return;
 			}
 			$this->SendDebug("CommandClientSocket", "Message: ".$Message." Rueckgabe: ".$Response, 0);
@@ -284,17 +279,5 @@
 	        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
 	        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);        
 	}    
-	    
-	protected function HasActiveParent()
-    	{
-		$Instance = @IPS_GetInstance($this->InstanceID);
-		if ($Instance['ConnectionID'] > 0)
-		{
-			$Parent = IPS_GetInstance($Instance['ConnectionID']);
-			if ($Parent['InstanceStatus'] == 102)
-			return true;
-		}
-        return false;
-    	}  
 }
 ?>
