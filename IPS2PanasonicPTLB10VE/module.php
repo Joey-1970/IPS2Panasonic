@@ -84,12 +84,16 @@
 		
         	If (($this->ReadPropertyBoolean("Open") == true) AND ($this->ConnectionTest() == true)) {
 			$this->SetTimerInterval("Messzyklus", 5 * 1000);
-			$this->SetStatus(102);
+			If ($this->GetStatus() <> 102) {
+				$this->SetStatus(102);
+			}
 			$this->GetStatus();
 		}
 		else {
 			$this->SetTimerInterval("Messzyklus", 0);
-			$this->SetStatus(104);
+			If ($this->GetStatus() <> 104) {
+				$this->SetStatus(104);
+			}
 		}
         }
 	    
@@ -244,14 +248,18 @@
 	   			else {
 	   				fclose($status);
 					$result = true;
-					$this->SetStatus(102);
+					If ($this->GetStatus() <> 102) {
+						$this->SetStatus(102);
+					}
 					$this->SendDebug("ConnectionTest", "Verbindung erfolgreich", 0);
 	   			}
 		}
 		else {
 			IPS_LogMessage("IPS2PanasonicPTLB10VE","IP ".$this->ReadPropertyString("IPAddress")." reagiert nicht!");
 			$this->SendDebug("ConnectionTest", "IP ".$this->ReadPropertyString("IPAddress")." reagiert nicht!", 0);
-			$this->SetStatus(104);
+			If ($this->GetStatus() <> 104) {
+				$this->SetStatus(104);
+			}
 		}
 	return $result;
 	}
